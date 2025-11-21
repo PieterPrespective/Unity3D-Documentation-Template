@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <style>
+      .layer { fill: #e1d5e7; stroke: #9673a6; stroke-width: 2; }
+      .ui-comp { fill: #f8cecc; stroke: #b85450; stroke-width: 1; }
+      .logic-comp { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 1; }
+      .data-comp { fill: #ffe6cc; stroke: #d79b00; stroke-width: 1; }
+      .text { font-family: Arial, sans-serif; font-size: 11px; text-anchor: middle; dominant-baseline: middle; }
+      .layer-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+  </defs>
+  
+  <!-- Title -->
+  <text x="400" y="25" class="layer-text" style="font-size: 18px;">Unity System Architecture</text>
+  
+  <!-- Presentation Layer -->
+  <rect x="50" y="50" width="700" height="80" rx="5" class="layer"/>
+  <text x="400" y="70" class="layer-text">Presentation Layer</text>
+  
+  <!-- UI Components -->
+  <rect x="70" y="90" width="100" height="30" rx="3" class="ui-comp"/>
+  <text x="120" y="105" class="text">UI Manager</text>
+  
+  <rect x="180" y="90" width="100" height="30" rx="3" class="ui-comp"/>
+  <text x="230" y="105" class="text">Menu System</text>
+  
+  <rect x="290" y="90" width="100" height="30" rx="3" class="ui-comp"/>
+  <text x="340" y="105" class="text">HUD Controller</text>
+  
+  <rect x="400" y="90" width="100" height="30" rx="3" class="ui-comp"/>
+  <text x="450" y="105" class="text">Dialog System</text>
+  
+  <!-- Business Logic Layer -->
+  <rect x="50" y="160" width="700" height="140" rx="5" class="layer"/>
+  <text x="400" y="180" class="layer-text">Business Logic Layer</text>
+  
+  <!-- Business Logic Components -->
+  <rect x="70" y="200" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="120" y="215" class="text">Game Manager</text>
+  
+  <rect x="180" y="200" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="230" y="215" class="text">Player Controller</text>
+  
+  <rect x="290" y="200" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="340" y="215" class="text">Enemy AI</text>
+  
+  <rect x="400" y="200" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="450" y="215" class="text">Inventory System</text>
+  
+  <rect x="70" y="250" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="120" y="265" class="text">Physics Engine</text>
+  
+  <rect x="180" y="250" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="230" y="265" class="text">Audio Manager</text>
+  
+  <rect x="290" y="250" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="340" y="265" class="text">Event System</text>
+  
+  <rect x="400" y="250" width="100" height="30" rx="3" class="logic-comp"/>
+  <text x="450" y="265" class="text">Scene Manager</text>
+  
+  <!-- Data Layer -->
+  <rect x="50" y="330" width="700" height="80" rx="5" class="layer"/>
+  <text x="400" y="350" class="layer-text">Data Layer</text>
+  
+  <!-- Data Components -->
+  <rect x="70" y="370" width="100" height="30" rx="3" class="data-comp"/>
+  <text x="120" y="385" class="text">Save System</text>
+  
+  <rect x="180" y="370" width="100" height="30" rx="3" class="data-comp"/>
+  <text x="230" y="385" class="text">Settings Manager</text>
+  
+  <rect x="290" y="370" width="100" height="30" rx="3" class="data-comp"/>
+  <text x="340" y="385" class="text">Analytics</text>
+  
+  <rect x="400" y="370" width="100" height="30" rx="3" class="data-comp"/>
+  <text x="450" y="385" class="text">Network Layer</text>
+  
+  <!-- Connection lines -->
+  <line x1="120" y1="120" x2="120" y2="200" stroke="#666" stroke-width="1"/>
+  <line x1="120" y1="280" x2="120" y2="370" stroke="#666" stroke-width="1"/>
+</svg>

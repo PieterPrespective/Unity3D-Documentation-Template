@@ -1,0 +1,32 @@
+{
+  "metadata": [
+    {
+      "dest": "api", "disableDefaultFilter": false, "filter": "filterConfig.yml",
+      "disableGitFeatures": false, "src": [
+        {
+          "src": "../Library/ScriptAssemblies", "files": ["UTTP.dll"]
+        }]
+      }], "build": {
+        "content": [
+          {
+            "files": ["api/**.yml", "api/index.md"]
+          }, {
+            "files": [
+              "tdd/**.md", "tdd/**/toc.yml", "userdocs/**.md", "userdocs/**/toc.yml",
+              "docsgen/**.md", "docsgen/**/toc.yml", "toc.yml", "*.md"]
+            }], "resource": [
+              {
+                "files": ["images/**"]
+              }, {
+                "files": ["codecoverage-web/**"]
+              }], "dest": "_site", "globalMetadata": {
+                "_appTitle": "Your Unity Project Documentation", "_appFooter": "Copyright ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© Your Team",
+                "_enableSearch": true
+              }, "template": ["default", "modern"], "postProcessors": ["ExtractSearchIndex"],
+              "markdownEngineName": "markdig", "markdownEngineProperties": {
+                "markdigExtensions": [
+                  "definitionlists", "footnotes", "tasklists", "pipetables", "diagrams"],
+                  "enableSourceMap": false
+                }
+              }
+            }

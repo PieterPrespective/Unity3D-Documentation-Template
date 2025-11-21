@@ -1,0 +1,181 @@
+# Documentation .gitignore
+# This file excludes all dynamically generated documentation artifacts
+
+# =========================
+# DocFX Generated Files
+# =========================
+
+# Main output directory for built documentation
+_site/
+site/
+
+# DocFX intermediate files
+obj/
+.cache/
+log/
+
+# API documentation generated from code
+api/*.yml
+api/.manifest
+api/**/*.yml
+api/**/*.manifest
+
+# Generated API XML documentation from Unity assemblies
+api/*.xml
+
+# DocFX metadata
+metadata/
+
+# =========================
+# Code Coverage Reports
+# =========================
+
+# Unity Code Coverage output
+codecoverage-web/
+CodeCoverage/
+TestResults/
+*.coverage
+*.coveragexml
+coverage.json
+coverage.opencover.xml
+
+# Coverage report formats
+coverage-report/
+coverage-html/
+*.lcov
+*.info
+
+# =========================
+# Diagram Generation
+# =========================
+
+# Generated images from Draw.io files
+images/generated/
+images/*.generated.png
+images/*.generated.svg
+images/*.generated.jpg
+images/*.generated.jpeg
+
+# Temporary diagram files
+images/*.tmp
+images/.temp/
+
+# =========================
+# Build Artifacts
+# =========================
+
+# Build logs
+*.log
+build.log
+docfx.log
+
+# Temporary files
+*.tmp
+.temp/
+temp/
+tmp/
+
+# =========================
+# IDE and Editor Files  
+# =========================
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# =========================
+# System Files
+# =========================
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# =========================
+# Package Manager
+# =========================
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Node modules (if using any JS tools)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# =========================
+# Backup Files
+# =========================
+
+*.bak
+*.backup
+*.old
+*.orig
+
+# =========================
+# DocFX Specific
+# =========================
+
+# DocFX plugins
+plugins/
+
+# Template cache
+_exported_templates/
+templates/.cache/
+
+# Search index
+searchindex.json
+index.json
+
+# Cross reference maps
+xrefmap.yml
+*.xrefmap.yml
+
+# =========================
+# Keep These Files
+# =========================
+
+# Ensure important config files are kept
+!docfx.json
+!toc.yml
+!index.md
+!filterConfig.yml
+!includedAPIAssemblies.txt
+
+# Keep all markdown source files
+!**/*.md
+
+# Keep source Draw.io files
+!images/*.drawio
+!images/*.drawio.png
+!images/*.drawio.svg
+
+# Keep documentation scripts
+!scripts/*.ps1
+!scripts/*.sh
+!scripts/*.py
+
+# Keep CSC response files for API documentation
+!**/csc.rsp

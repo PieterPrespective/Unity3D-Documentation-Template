@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Unity Game Flow - Interactive</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #1976d2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .embed-frame {
+            flex: 1;
+            border: none;
+            width: 100%;
+        }
+        .fallback {
+            padding: 20px;
+            text-align: center;
+            background: #f5f5f5;
+            display: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">ðŸŽ® Unity Game Flow Diagram - Interactive View</div>
+        
+        <!-- Try loading with a simple, working diagram -->
+        <iframe class="embed-frame" 
+                src="https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Unity%20Game%20Flow#R7VhNc5swEP01PrYjPgzYx8RO2046SSedaS89dQSWQY1AVEgO%2BPddiQ%2BBbDdNk6btpD1Y8nZX0tu3qxXpmePl9oGjZfKVRTjtGVq07ZmTnmEYuuvCjyTsKsKgj4SKsOAkqkh6S5iRP1gRNUVdk4isWg0FY6kgy5YYsizDgWjREOdsU282Z2l71CVeYI0wC1CqU3%2BQSCQttW%2FoLf0zJouk7lnXVMkM1W0VYZXImG3aTEpJM7ZGS6yHFeJZ0CjOXoJRnNKNDUkJsQ7TF3YAGxO4%2BMRqr6BKmI0Z3oqCIZD8N5jDbE1oZekhR3s%2BfIKStBPfJqGTgd%2BkaDRfwl5LHMPfaE5wSBVgKA5f3IZJJnBCQ3VxpvFQq8Y9VWYbHOKEwHHPNvADgv%2FR7L2x3bOOdGkiHgmhw"></iframe>
+        
+        <div class="fallback" id="fallback">
+            <h3>ðŸŽ® Unity Game Flow Diagram</h3>
+            <p>Interactive diagram viewer. Choose an option below:</p>
+            <a href="unity-game-flow.svg" class="btn">ðŸ“„ View Static Diagram</a>
+            <a href="https://app.diagrams.net/" class="btn" target="_blank">ðŸš€ Open Draw.io Editor</a>
+            <a href="unity-game-flow.drawio" class="btn" download>ðŸ’¾ Download Diagram File</a>
+        </div>
+    </div>
+    
+    <script>
+        // Simple fallback handling
+        var iframe = document.querySelector('.embed-frame');
+        var fallback = document.getElementById('fallback');
+        
+        iframe.onload = function() {
+            console.log('Diagram loaded successfully');
+        };
+        
+        iframe.onerror = function() {
+            console.log('Error loading diagram, showing fallback');
+            iframe.style.display = 'none';
+            fallback.style.display = 'block';
+        };
+        
+        // Show fallback after timeout if no response
+        setTimeout(function() {
+            try {
+                if (!iframe.contentDocument && !iframe.contentWindow) {
+                    console.log('Timeout reached, showing fallback');
+                    iframe.style.display = 'none';
+                    fallback.style.display = 'block';
+                }
+            } catch (e) {
+                // Cross-origin issues, that's expected
+                console.log('Cross-origin restriction (normal)');
+            }
+        }, 8000);
+    </script>
+</body>
+</html>

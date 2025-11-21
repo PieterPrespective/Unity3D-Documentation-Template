@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unity Game Flow - Interactive</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+        }
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #1976d2;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .diagram-preview {
+            width: 90%;
+            max-width: 600px;
+            height: 300px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-image: url('unity-game-flow.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .diagram-preview:hover {
+            border-color: #1976d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-group {
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 8px 8px 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn.primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn.primary:hover {
+            background: #1565c0;
+            transform: translateY(-1px);
+        }
+        .btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+        .btn.success {
+            background: #28a745;
+            color: white;
+        }
+        .btn.success:hover {
+            background: #218838;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #17a2b8;
+            max-width: 600px;
+        }
+        .info h4 {
+            margin-top: 0;
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            🎮 Unity Game Flow Diagram - Interactive Options
+        </div>
+        
+        <div class="content">
+            <!-- Preview of the diagram -->
+            <div class="diagram-preview" onclick="openInDrawio()" title="Click to open in Draw.io">
+            </div>
+            
+            <div class="btn-group">
+                <a href="#" onclick="openInDrawio(); return false;" class="btn primary">
+                    🚀 Open in Draw.io Editor
+                </a>
+                <a href="unity-game-flow.svg" target="_blank" class="btn secondary">
+                    📄 View Static Version
+                </a>
+                <a href="unity-game-flow.drawio" download class="btn success">
+                    💾 Download .drawio File
+                </a>
+            </div>
+            
+            <div class="info">
+                <h4>📊 Interactive Diagram Features</h4>
+                <p><strong>Choose your preferred way to interact:</strong></p>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li><strong>Draw.io Editor</strong>: Opens a new tab with full editing capabilities</li>
+                    <li><strong>Static Version</strong>: High-quality SVG for viewing and printing</li>
+                    <li><strong>Download File</strong>: Get the source .drawio file for offline editing</li>
+                </ul>
+                <p><em>This approach avoids iframe encoding issues while providing full functionality.</em></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openInDrawio() {
+            // Open Draw.io with a blank diagram for creating Unity flow
+            var drawioUrl = 'https://app.diagrams.net/?splash=0&ui=kennedy&title=Unity%20Game%20Flow';
+            window.open(drawioUrl, '_blank', 'width=1200,height=800');
+        }
+    </script>
+</body>
+</html>

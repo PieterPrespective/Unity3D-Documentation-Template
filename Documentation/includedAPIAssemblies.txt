@@ -1,0 +1,9 @@
+# Unity Assembly Paths for API Documentation
+# One path per line, relative to project root
+# Lines starting with # are comments
+
+# Main Unity scripts
+Assets/Scripts
+
+# Custom assemblies
+Assets/UTTP

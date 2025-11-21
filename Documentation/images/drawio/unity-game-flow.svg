@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <style>
+      .node { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 2; }
+      .decision { fill: #fff2cc; stroke: #d6b656; stroke-width: 2; }
+      .start-end { fill: #d5e8d4; stroke: #82b366; stroke-width: 2; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+      .arrow { stroke: #000; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="400" y="30" class="text" style="font-size: 18px; font-weight: bold;">Unity Game Flow</text>
+  
+  <!-- Start -->
+  <ellipse cx="400" cy="80" rx="60" ry="30" class="start-end"/>
+  <text x="400" y="80" class="text">Game Start</text>
+  
+  <!-- Initialize Systems -->
+  <rect x="320" y="130" width="160" height="40" rx="5" class="node"/>
+  <text x="400" y="150" class="text">Initialize Systems</text>
+  
+  <!-- Load Scene -->
+  <rect x="320" y="200" width="160" height="40" rx="5" class="node"/>
+  <text x="400" y="220" class="text">Load Scene</text>
+  
+  <!-- Player Ready Decision -->
+  <polygon points="400,270 460,300 400,330 340,300" class="decision"/>
+  <text x="400" y="300" class="text">Player Ready?</text>
+  
+  <!-- Game Loop -->
+  <rect x="320" y="360" width="160" height="40" rx="5" class="node"/>
+  <text x="400" y="380" class="text">Game Loop</text>
+  
+  <!-- Game Over -->
+  <ellipse cx="400" cy="460" rx="60" ry="30" class="start-end"/>
+  <text x="400" y="460" class="text">Game Over</text>
+  
+  <!-- Wait for Input -->
+  <rect x="520" y="280" width="120" height="40" rx="5" class="node"/>
+  <text x="580" y="300" class="text">Wait for Input</text>
+  
+  <!-- Arrows -->
+  <line x1="400" y1="110" x2="400" y2="130" class="arrow"/>
+  <line x1="400" y1="170" x2="400" y2="200" class="arrow"/>
+  <line x1="400" y1="240" x2="400" y2="270" class="arrow"/>
+  <line x1="400" y1="330" x2="400" y2="360" class="arrow"/>
+  <line x1="400" y1="400" x2="400" y2="430" class="arrow"/>
+  <line x1="460" y1="300" x2="520" y2="300" class="arrow"/>
+  <path d="M 580 280 L 580 220 L 480 220" class="arrow"/>
+  
+  <!-- Labels -->
+  <text x="415" y="345" class="text" style="font-size: 10px;">Yes</text>
+  <text x="485" y="295" class="text" style="font-size: 10px;">No</text>
+  <text x="530" y="210" class="text" style="font-size: 10px;">Input Received</text>
+</svg>

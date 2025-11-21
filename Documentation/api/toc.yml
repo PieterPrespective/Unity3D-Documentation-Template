@@ -1,0 +1,13 @@
+### YamlMime:TableOfContent
+items:
+- uid: UTTP
+  name: UTTP
+  type: Namespace
+  items:
+  - uid: UTTP.SomeTestScript
+    name: SomeTestScript
+    type: Class
+  - uid: UTTP.SomeUtilityClass
+    name: SomeUtilityClass
+    type: Class
+memberLayout: SamePage
