@@ -271,11 +271,8 @@ foreach ($relativePath in $assemblyPaths) {
     if (-not $ValidateOnly) {
         # Create/check csc.rsp file
         $rspPath = Join-Path $fullPath "csc.rsp"
-        $xmlOutputPath = "..\..\Documentation\api\$assemblyName.xml"
-        
-        # Calculate relative path from assembly folder to Documentation/api
-        $levelsUp = ($relativePath -split '[/\\]').Count
-        $xmlOutputPath = ("..\" * $levelsUp) + "Documentation\api\$assemblyName.xml"
+        # XML files should be placed alongside DLLs in Library/ScriptAssemblies for docfx to find them
+        $xmlOutputPath = "Library\ScriptAssemblies\$assemblyName.xml"
         
         if (Test-Path $rspPath) {
             if ($Force) {
@@ -292,15 +289,17 @@ foreach ($relativePath in $assemblyPaths) {
             $createdRspCount++
         }
         
-        # Create csc.rsp content
+        # Create csc.rsp content with Unity default error handling flags
         $rspContent = @"
 -doc:$xmlOutputPath
 -nowarn:1591
+-warnaserror-
+-warn:4
 "@
         
         # Write csc.rsp file
         $rspContent | Out-File -FilePath $rspPath -Encoding UTF8 -NoNewline
-        Write-Host "  [OK] Written csc.rsp with XML output to: Documentation\api\$assemblyName.xml" -ForegroundColor DarkGray
+        Write-Host "  [OK] Written csc.rsp with XML output to: Library\ScriptAssemblies\$assemblyName.xml" -ForegroundColor DarkGray
     }
     
     Write-Host ""
