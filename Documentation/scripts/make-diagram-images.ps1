@@ -4,8 +4,14 @@
     Automatically convert DrawIO diagrams to SVG and update markdown files
 .DESCRIPTION
     This script searches for all .drawio files in the Documentation folder,
-    exports them to SVG if the SVG doesn't exist, and updates markdown files
+    exports them to SVG with size tracking via XML comments, and updates markdown files
     with image tags where special hidden tags are found.
+    
+    Features:
+    - Tracks .drawio file size via XML comment in SVG files (e.g., <!-- DrawIO-Source-Size: 655 -->)
+    - Automatically detects when .drawio files change and regenerates SVGs
+    - Maintains clean filenames for easy linking (diagram.svg vs diagram_655b.svg)
+    - Updates markdown files with correct image references
 .EXAMPLE
     .\make-diagram-images.ps1
     Process all DrawIO diagrams and update markdown files
@@ -44,6 +50,85 @@ Write-Host ""
 if (-not (Test-Path $SVGPath)) {
     New-Item -ItemType Directory -Path $SVGPath -Force | Out-Null
     Write-Host "  [CREATE] SVG directory created: $SVGPath" -ForegroundColor Green
+}
+
+# Function to check if SVG file is likely corrupted (1KB or less)
+function Test-SVGCorrupted {
+    param([string]$SVGFilePath)
+    
+    if (-not (Test-Path $SVGFilePath)) {
+        return $false
+    }
+    
+    $fileInfo = Get-Item $SVGFilePath
+    # Consider files 1KB (1024 bytes) or less as potentially corrupted
+    return ($fileInfo.Length -le 1024)
+}
+
+# Function to read DrawIO source size from SVG XML comment
+function Get-DrawIOSizeFromSVG {
+    param([string]$SVGFilePath)
+    
+    if (-not (Test-Path $SVGFilePath)) {
+        return $null
+    }
+    
+    try {
+        # Read first few lines to find the comment (should be on second line after XML declaration)
+        $firstLines = Get-Content -Path $SVGFilePath -TotalCount 10
+        foreach ($line in $firstLines) {
+            if ($line -match '<!--\s*DrawIO-Source-Size:\s*(\d+)\s*-->') {
+                return [int]$matches[1]
+            }
+        }
+    } catch {
+        # If file can't be read or parsed, return null
+    }
+    return $null
+}
+
+# Function to add DrawIO source size comment to SVG file
+function Add-DrawIOSizeToSVG {
+    param(
+        [string]$SVGFilePath,
+        [int]$SourceSize
+    )
+    
+    if (-not (Test-Path $SVGFilePath)) {
+        return $false
+    }
+    
+    try {
+        $lines = Get-Content -Path $SVGFilePath
+        $newLines = @()
+        $sizeComment = "<!-- DrawIO-Source-Size: $SourceSize -->"
+        $commentAdded = $false
+        
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $line = $lines[$i]
+            $newLines += $line
+            
+            # Insert comment after XML declaration (if present) or after first line
+            if (-not $commentAdded -and 
+                ($line -match '^\s*<\?xml.*\?>\s*$' -or 
+                 ($i -eq 0 -and -not ($line -match '^\s*<\?xml.*\?>\s*$')))) {
+                $newLines += $sizeComment
+                $commentAdded = $true
+            }
+        }
+        
+        # If no XML declaration was found and comment wasn't added, add it at the beginning
+        if (-not $commentAdded) {
+            $newLines = @($sizeComment) + $newLines
+        }
+        
+        # Write back to file with UTF8 encoding
+        $newLines -join "`n" | Out-File -FilePath $SVGFilePath -Encoding UTF8 -NoNewline
+        return $true
+    } catch {
+        Write-Host "  [ERROR] Failed to add size comment to SVG: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
 }
 
 # Function to check if DrawIO desktop is available
@@ -89,6 +174,7 @@ function Export-DrawIOToSVG {
             return $true
         } catch {
             Write-Host "  [ERROR] Failed to execute DrawIO: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "  [NOTE] Errors can occur if you have Draw.io desktop open in the background, please make sure the application is closed and retry generating diagram images" -ForegroundColor Yellow
             return $false
         }
     }
@@ -100,10 +186,13 @@ function New-SVGPlaceholder {
     param(
         [string]$DrawIOFile,
         [string]$OutputFile,
-        [string]$DiagramName
+        [string]$DiagramName,
+        [int]$SourceSize
     )
     
     $svgContent = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DrawIO-Source-Size: $SourceSize -->
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
   <rect width="600" height="400" fill="#f0f0f0" stroke="#cccccc" stroke-width="2"/>
   <text x="300" y="180" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#666666">
@@ -132,28 +221,75 @@ if ($drawioFiles.Count -eq 0) {
     # Process each DrawIO file
     foreach ($drawioFile in $drawioFiles) {
         $baseName = [System.IO.Path]::GetFileNameWithoutExtension($drawioFile.Name)
+        $drawioSize = $drawioFile.Length
         $svgFile = Join-Path $SVGPath "$baseName.svg"
         
-        # Check if SVG already exists
-        if ((Test-Path $svgFile) -and -not $Force) {
-            Write-Host "  [SKIP] SVG already exists: $baseName.svg" -ForegroundColor DarkGray
+        $needsRegeneration = $false
+        
+        if (Test-Path $svgFile) {
+            # Check if SVG file is corrupted (1KB or less)
+            if (Test-SVGCorrupted -SVGFilePath $svgFile) {
+                $svgFileInfo = Get-Item $svgFile
+                Write-Host "  [CORRUPTED] SVG file is only $($svgFileInfo.Length) bytes, forcing regeneration: $baseName.svg" -ForegroundColor Red
+                if (-not $DryRun) {
+                    Remove-Item -Path $svgFile -Force
+                    Write-Host "  [REMOVE] Removed corrupted SVG file" -ForegroundColor DarkGray
+                }
+                $needsRegeneration = $true
+            } else {
+                # Check if existing SVG has the correct source size
+                $existingSize = Get-DrawIOSizeFromSVG -SVGFilePath $svgFile
+                
+                if ($existingSize -eq $null) {
+                    Write-Host "  [UPDATE] SVG exists but has no size comment: $baseName.svg" -ForegroundColor Yellow
+                    $needsRegeneration = $true
+                } elseif ($existingSize -ne $drawioSize) {
+                    Write-Host "  [SIZE-CHANGED] DrawIO size changed from $existingSize to $drawioSize bytes: $baseName" -ForegroundColor Yellow
+                    $needsRegeneration = $true
+                } else {
+                    Write-Host "  [SKIP] SVG up-to-date (${drawioSize}b): $baseName.svg" -ForegroundColor DarkGray
+                }
+            }
         } else {
+            $needsRegeneration = $true
+        }
+        
+        # Generate SVG if needed
+        if ($needsRegeneration -or $Force) {
             if ($DryRun) {
                 Write-Host "  [DRY-RUN] Would create: $baseName.svg" -ForegroundColor Cyan
             } else {
                 # Try to export using DrawIO desktop
                 $exported = Export-DrawIOToSVG -DrawIOFile $drawioFile.FullName -OutputFile $svgFile
                 
-                if (-not $exported) {
+                if ($exported) {
+                    # Check if the generated SVG is corrupted (1KB or less)
+                    if (Test-Path $svgFile) {
+                        if (Test-SVGCorrupted -SVGFilePath $svgFile) {
+                            $svgFileInfo = Get-Item $svgFile
+                            Write-Host "  [ERROR] Generated SVG file is only $($svgFileInfo.Length) bytes (likely corrupted): $baseName.svg" -ForegroundColor Red
+                            Write-Host "  [NOTE] Errors can occur if you have Draw.io desktop open in the background, please make sure the application is closed and retry generating diagram images" -ForegroundColor Yellow
+                            Remove-Item -Path $svgFile -Force
+                            Write-Host "  [REMOVE] Removed corrupted SVG file" -ForegroundColor DarkGray
+                        } else {
+                            # Add size comment to the exported SVG
+                            $success = Add-DrawIOSizeToSVG -SVGFilePath $svgFile -SourceSize $drawioSize
+                            if ($success) {
+                                Write-Host "  [CREATE] SVG created with size comment (${drawioSize}b): $baseName.svg" -ForegroundColor Green
+                            } else {
+                                Write-Host "  [WARN] SVG created but failed to add size comment: $baseName.svg" -ForegroundColor Yellow
+                            }
+                        }
+                    }
+                } else {
                     # Create placeholder SVG if DrawIO desktop is not available
-                    Write-Host "  [PLACEHOLDER] Creating placeholder SVG: $baseName.svg" -ForegroundColor Yellow
-                    New-SVGPlaceholder -DrawIOFile $drawioFile.FullName -OutputFile $svgFile -DiagramName $baseName
+                    Write-Host "  [PLACEHOLDER] Creating placeholder SVG (${drawioSize}b): $baseName.svg" -ForegroundColor Yellow
+                    New-SVGPlaceholder -DrawIOFile $drawioFile.FullName -OutputFile $svgFile -DiagramName $baseName -SourceSize $drawioSize
                 }
                 
-                if (Test-Path $svgFile) {
-                    Write-Host "  [CREATE] SVG created: $baseName.svg" -ForegroundColor Green
-                } else {
+                if (-not (Test-Path $svgFile)) {
                     Write-Host "  [ERROR] Failed to create SVG: $baseName.svg" -ForegroundColor Red
+                    Write-Host "  [NOTE] Errors can occur if you have Draw.io desktop open in the background, please make sure the application is closed and retry generating diagram images" -ForegroundColor Yellow
                 }
             }
         }
@@ -286,6 +422,8 @@ Write-Host ""
 Write-Host "Usage tips:" -ForegroundColor Yellow
 Write-Host "  • Add <!-- DRAWIO: diagram-name.drawio --> to markdown files" -ForegroundColor DarkGray
 Write-Host "  • Run this script to auto-generate SVG files and image tags" -ForegroundColor DarkGray
+Write-Host "  • Source file size is tracked via XML comment in SVG files" -ForegroundColor DarkGray
+Write-Host "  • SVG files are automatically regenerated when .drawio files change" -ForegroundColor DarkGray
 Write-Host "  • Use -Force to regenerate all SVG files" -ForegroundColor DarkGray
 Write-Host "  • Use -DryRun to preview changes without applying them" -ForegroundColor DarkGray
 Write-Host ""
