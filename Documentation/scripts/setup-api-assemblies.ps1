@@ -58,136 +58,8 @@ function Get-AssemblyNameFromPath($Path) {
     return $folderName
 }
 
-# Improved JSON formatting function
-function Format-Json {
-    param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [string]$Json,
-        [int]$IndentSize = 2
-    )
-    
-    $indent = 0
-    $lineStart = $true
-    $inString = $false
-    $escape = $false
-    $result = ""
-    $indentStr = " " * $IndentSize
-    
-    for ($i = 0; $i -lt $Json.Length; $i++) {
-        $char = $Json[$i]
-        $nextChar = if ($i + 1 -lt $Json.Length) { $Json[$i + 1] } else { $null }
-        $prevChar = if ($i -gt 0) { $Json[$i - 1] } else { $null }
-        
-        # Handle escape characters
-        if ($escape) {
-            $result += $char
-            $escape = $false
-            continue
-        }
-        
-        if ($char -eq '\' -and $inString) {
-            $escape = $true
-            $result += $char
-            continue
-        }
-        
-        # Handle strings
-        if ($char -eq '"' -and -not $escape) {
-            $inString = -not $inString
-        }
-        
-        if ($inString) {
-            $result += $char
-            continue
-        }
-        
-        # Handle whitespace outside strings
-        if ($char -match '\s') {
-            # Skip whitespace outside strings
-            if (-not $lineStart) {
-                # Keep single space before certain characters
-                if ($nextChar -eq '"' -or $prevChar -eq ':') {
-                    $result += ' '
-                }
-            }
-            continue
-        }
-        
-        $lineStart = $false
-        
-        # Handle structural characters
-        switch ($char) {
-            '{' {
-                $result += $char
-                if ($nextChar -ne '}') {
-                    $indent++
-                    $result += "`n" + ($indentStr * $indent)
-                    $lineStart = $true
-                }
-            }
-            '}' {
-                if ($prevChar -ne '{') {
-                    $indent--
-                    $result += "`n" + ($indentStr * $indent)
-                    $lineStart = $true
-                }
-                $result += $char
-            }
-            '[' {
-                $result += $char
-                if ($nextChar -ne ']') {
-                    # Check if this is a simple array (all elements on one line)
-                    $closeIndex = $Json.IndexOf(']', $i)
-                    $arrayContent = if ($closeIndex -gt $i) { 
-                        $Json.Substring($i + 1, $closeIndex - $i - 1) 
-                    } else { 
-                        "" 
-                    }
-                    
-                    # If array contains objects or is long, format it multi-line
-                    if ($arrayContent -match '[{}\[]' -or $arrayContent.Length -gt 60) {
-                        $indent++
-                        $result += "`n" + ($indentStr * $indent)
-                        $lineStart = $true
-                    }
-                }
-            }
-            ']' {
-                if ($prevChar -ne '[') {
-                    # Check if we need to dedent
-                    $openIndex = $result.LastIndexOf('[')
-                    if ($openIndex -ge 0) {
-                        $betweenBrackets = $result.Substring($openIndex + 1)
-                        if ($betweenBrackets -match '`n') {
-                            $indent--
-                            $result += "`n" + ($indentStr * $indent)
-                            $lineStart = $true
-                        }
-                    }
-                }
-                $result += $char
-            }
-            ',' {
-                $result += $char
-                # Check if we're in a multi-line context
-                if ($result -match '[\{\[].*`n' -or $result.Length - $result.LastIndexOf("`n") -gt 80) {
-                    $result += "`n" + ($indentStr * $indent)
-                    $lineStart = $true
-                } else {
-                    $result += ' '
-                }
-            }
-            ':' {
-                $result += $char + ' '
-            }
-            default {
-                $result += $char
-            }
-        }
-    }
-    
-    return $result
-}
+# Note: Removed custom Format-Json function to prevent encoding issues
+# Using PowerShell's built-in ConvertTo-Json formatting instead
 
 Write-Host ""
 Write-ColorOutput Cyan "========================================="
@@ -370,13 +242,12 @@ if (-not $ValidateOnly -and $assemblies.Count -gt 0) {
         $docfxContent.build.content = @($apiContent) + $docfxContent.build.content
     }
     
-    # Convert to JSON and format properly
-    $jsonString = $docfxContent | ConvertTo-Json -Depth 10 -Compress
-    $formattedJson = Format-Json -Json $jsonString
+    # Convert to JSON with proper formatting - use built-in formatting instead of custom function
+    $jsonString = $docfxContent | ConvertTo-Json -Depth 10
     
-    # Save with UTF8 encoding without BOM
+    # Save with UTF8 encoding without BOM to prevent character corruption
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [System.IO.File]::WriteAllText($docfxPath, $formattedJson, $utf8NoBom)
+    [System.IO.File]::WriteAllText($docfxPath, $jsonString, $utf8NoBom)
     
     Write-ColorOutput Green "[OK] Updated docfx.json with $($assemblies.Count) assemblies"
     Write-Host ""
