@@ -1,0 +1,42 @@
+- In this assignment we'll be writing a part of the 'Technical Design Document' (TDD) on the given {Feature}
+- For context on TDD within Unity3D, please read:
+		 - Documentation\tdd\Unity3D_TDD_Research.md
+ - Any documentation and files that are created should be placed here:
+		 - Documentation\tdd\{Feature}
+		 - Do not create a sperate toc at this location, but rather create the required md files and link them to the toc at 'Documentation\tdd'
+ -  For a how-to on setting up the TDD documentation section see:
+		 - Documentation\docsgen\adding-subtopic.md
+		 - Documentation\docsgen\drawio-integration.md
+- For context on this projects development approach please read the prompt 'Prompts/BasePrompt.md' - in this assignment we'll not be writing any code, but we do want our project to adhere to rules in this document
+- For the feature documentation - create at least the following sections 
+	- Executive Summary
+		- Introduction to the feature
+		- Describing the overall purpose and intent of the feature - if possible to infer, also describe goals
+	- Table of Contents
+	- Feature Architecture
+		- The structure of data classes and structs relevant to this part of the application 
+			- INTENDED PURPOSE FOR READER : Understand what classes affect this feature, what the purpose of the classes are, what they store, and where they are located
+			- If scripts/classes are passed previously in the instruction, please deeply investigate this code and include classes that are referenced in said scripts/classes
+			- please output the result as draw.io diagram, and nest it in .md file
+			- In text, please offer a short description per class/struct what you conclude their function is and/or what the author has included in the description
+		- The flow of events through this part of the application (functions)
+			- INTENDED PURPOSE FOR READER: Understand how the application accesses/uses this feature, at what times during the application runtime, and help pinpoint from where an issue/bug may originate given a future bugreport
+			- If scripts/classes are passed previously in the instruction, please deeply investigate this code and identify public entry points to the given code 
+				- If the script/class is or inherits from a Monobehaviour - 
+					- Please review the documentation at Unity3d 'https://docs.unity3d.com/ScriptReference/MonoBehaviour.html' - 
+						- also consider flow resulting from any implementation of the 'Messages' functions
+			- Describe the location of flow starting points
+			- Per flow, offer a short summary on its purpose and implementation - if possible, denote limitations and/or constraints (if fitting, link to ADRs in next section)
+			- Please create sequence- or event flow diagrams for all event flows and add them as draw.io diagrams, also nest and describe them in the .md file
+			- Describe test coverage of said flow, and gaps if applicable
+	- Patterns used
+		- Please make sure a 'PatternCatalog' document with common (found) code (structural) patterns exists at 'Documentation/tdd/PatternCatalog.md'
+		- After analysis of the code, please document recurring patterns to the catalog - please include OOP Patterns, Functional Patterns, ECS Patterns and Cross-Paradigm Patterns
+		- If a pattern largely overlaps with an already existing pattern, please document it as a variant
+		- In the feature document, please refer to documented patterns in 'PatternCatalog'
+	- Architecture Decision Record (ADR)
+		- Based on your analysis of the code infer what overall decisions were leading in the current design
+	- Desired improvement section
+		- valuate the scripts named above, and any relevant scripts they use - considering proper c# code guidelines what would be suggested changes to improve the code quality
+	- Make sure the documentation is readible for developers knowledgable on Unity3D development, but are not up-to-date with this particular project
+	
